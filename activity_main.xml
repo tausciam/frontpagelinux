@@ -13,11 +13,10 @@
 
         <WebView
             android:id="@+id/webview"
-            app:layout_constraintDimensionRatio="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
             android:windowSoftInputMode="adjustResize" />
+
 
     </RelativeLayout>
 

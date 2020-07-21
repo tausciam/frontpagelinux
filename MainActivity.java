@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         enable DOM storage or the hamburger menu won't work */
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
-        
+
         loadWebSite();
 
         /*This is the second portion to restore state after orientation change.
@@ -159,6 +160,32 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadWebSite() {
         webView.loadUrl("https://frontpagelinux.com");
+    }
+
+    //This whole function is so when you can scroll up and down, but a pull down at the top refreshes.
+    private ViewTreeObserver.OnScrollChangedListener mOnScrollChangedListener;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        mySwipeRefreshLayout.getViewTreeObserver().addOnScrollChangedListener(mOnScrollChangedListener =
+                new ViewTreeObserver.OnScrollChangedListener() {
+                    @Override
+                    public void onScrollChanged() {
+                        if (webView.getScrollY() == 0)
+                            mySwipeRefreshLayout.setEnabled(true);
+                        else
+                            mySwipeRefreshLayout.setEnabled(false);
+
+                    }
+                });
+    }
+
+    @Override
+    public void onStop() {
+        mySwipeRefreshLayout.getViewTreeObserver().removeOnScrollChangedListener(mOnScrollChangedListener);
+        super.onStop();
     }
 
 }
