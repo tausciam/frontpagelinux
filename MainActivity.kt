@@ -1,5 +1,6 @@
 package com.frontpagelinux
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -38,6 +39,36 @@ class MainActivity : AppCompatActivity() {
                 }
             }, 2000)
         }
+
+        /*This is a feature request by Michael Tunnell. Press and hold on a link to be
+        able to copy the URL or share it with other apps/friends. It works with text and
+        image links.
+         */
+        webView!!.setOnLongClickListener(View.OnLongClickListener {
+            val result = webView!!.hitTestResult
+            var url :String? = null
+            if (result.type == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+                val handler = Handler()
+                val message = handler.obtainMessage()
+
+                webView!!.requestFocusNodeHref(message)
+                url = message.data.getString("url")
+            }
+            if (result.type == WebView.HitTestResult.SRC_ANCHOR_TYPE) {
+                url = result.extra
+            }
+            
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, url)
+                type = "text/plain"
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
+
+            true
+        })
 
         /*Javascript is used in many modern websites, but you have to also
         enable DOM storage or the hamburger menu won't work */
